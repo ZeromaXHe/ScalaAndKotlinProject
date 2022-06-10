@@ -74,6 +74,9 @@ object Chapter8Test {
     // 省略掉 _ 的这种形式只在明确需要函数的地方被允许，比如上面例中的 foreach 调用 println。
     // 编译器知道这里需要的是一个函数，因为 foreach 要求一个函数作为入参。
     // 在那些并不需要函数的场合（比如这里的 var a），尝试使用这样的形式会引发编译错误。
+
+    // 除非这样指明类型：
+    val a2: (Int, Int, Int) => Int = sum
     println(a)
     println(a(1, 2, 3))
 

@@ -6,7 +6,7 @@ package chapter6
  * @Description:
  * @ModifiedBy: zhuxi
  */
-class Rational(n: Int, d: Int) {
+class Rational(n: Int, d: Int) extends Ordered[Rational] {
   /// Scala 编译器会将你在类定义体中给出的非字段或方法定义的代码编译进类的主构造方法中
   //  println("Created " + n + "/" + d)
   require(d != 0)
@@ -89,4 +89,23 @@ class Rational(n: Int, d: Int) {
 
   private def gcd(a: Int, b: Int): Int =
     if (b == 0) a else gcd(b, a % b)
+
+  /**
+   * 12.4 Ordered 特质
+   * 你只需要做两件事。首先，这个版本的 Rational 混入了 Ordered 特质。
+   * 与你看到过的其他特质不同，Ordered 要求你在混入时传入一个类型参数（type paramter）。
+   * 你需要做的第二件事是定义一个用来比较两个对象的 compare 方法，该方法应该比较接收者，即 this，和作为参数传入该方法的对象。
+   * 如果两个对象相同，它应该返回 0；如果接收者比入参小，应该返回负值；如果接收者比入参大，则返回正值。
+   *
+   * 要小心 Ordered 特质并不会帮你定义 equals 方法，因为它做不到。
+   * 这当中的问题在于用 compare 来实现 equals 需要检查传入对象的类型，而由于（Java 的）类型擦除机制，Ordered 特质自己无法完成这个检查。
+   * 因此，需要自己定义 equals 方法，哪怕你已经继承了 Ordered。
+   *
+   * 个人注：特质的方法 override 关键字不是强制的，重写具体实现才必须
+   *
+   * @param that
+   * @return
+   */
+  def compare(that: Rational): Int =
+    (this.numer * that.denom) - (that.numer * this.denom)
 }
