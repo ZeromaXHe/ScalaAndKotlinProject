@@ -160,9 +160,9 @@ object Chapter8Test {
     def printTime(out: java.io.PrintStream = Console.out, divisor: Int = 1) =
       out.println("time = " + System.currentTimeMillis() / divisor)
 
-    // 不知道这个过程哪里打印了一个括号"()"？
-    println(printTime(out = Console.err))
-    println(printTime(divisor = 1000))
+    // 不需要 println 包裹，否则会多打印一个括号"()"（printTime 的返回 Unit）
+    printTime(out = Console.err)
+    printTime(divisor = 1000)
   }
 
   /**

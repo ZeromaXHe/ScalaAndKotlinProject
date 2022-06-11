@@ -46,6 +46,13 @@ abstract class Element {
   def above(that: Element): Element = {
     val this1 = this widen that.width
     val that1 = that widen this.width
+    // 在 Scala 中，断言的写法是对预定义方法 assert 的调用。
+    // 如果 condition 不满足，表达式 assert(condition) 将抛出 AssertionError。
+    // assert 还有另一个版本：assert(condition, explanation)，
+    // 首先检查 condition 是否满足，如果不满足，那么就抛出包含给定 explanation 的 AssertionError。
+    // explanation 的类型为 Any，因此可以传入任何对象。
+    // assert 方法将调用 explanation 的 toString 方法来获取一个字符串的解释放入 AssertionError。
+    assert(this1.width == that1.width)
     elem(this1.contents ++ that1.contents)
   }
 
@@ -82,13 +89,18 @@ abstract class Element {
    * @param w
    * @return
    */
-  def widen(w: Int): Element =
+  def widen(w: Int): Element = {
     if (w <= width) this
     else {
       val left = elem(' ', (w - width) / 2, height)
       val right = elem(' ', w - width - left.width, height)
       left beside this beside right
-    }
+    } ensuring (w <= _.width)
+    // ensuring 这个方法可以被用于任何结果类型，这得益于一个隐式转换。
+    // 虽然这段代码看上去调用的是 widen 结果的 ensuring 方法，实际上调用的是某个可以从 Element 隐式转换得到的类型的 ensuring 方法。
+    // 该方法接收一个参数，这是一个接收结果类型参数并返回 Boolean 的前提条件函数。ensuring 所做的，就是把计算结果传递给这个前提条件函数。
+    // 如果前提条件函数返回 true，那么 ensuring 就正常返回结果；如果前提条件返回 false，那么 ensuring 将抛出 AssertionError。
+  }
 
   /**
    * 示例 10.13 还展示了另一个类似的方法 heighten，执行同样的功能，只不过方向变成了纵向的。
