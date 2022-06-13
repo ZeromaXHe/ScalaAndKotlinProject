@@ -470,6 +470,20 @@ object Chapter15Test {
     for (Some(fruit) <- results) println(fruit)
   }
 
+  /**
+   * 15.8 一个复杂的例子
+   */
+  def test15_8(): Unit = {
+    val f = new ExprFormatter
+    val e1 = BinOp("*", BinOp("/", Number(1), Number(2)), BinOp("+", Var("x"), Number(1)))
+    val e2 = BinOp("+", BinOp("/", Var("x"), Number(2)), BinOp("/", Number(1.5), Var("x")))
+    val e3 = BinOp("/", e1, e2)
+
+    def show(e: Expr) = println(f.format(e) + "\n\n")
+
+    for (e <- Array(e1, e2, e3)) show(e)
+  }
+
   def main(args: Array[String]): Unit = {
     test15_1()
     println("------------")
@@ -482,5 +496,7 @@ object Chapter15Test {
     test15_6()
     println("------------")
     test15_7()
+    println("------------")
+    test15_8()
   }
 }
