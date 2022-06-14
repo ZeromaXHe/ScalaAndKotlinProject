@@ -397,7 +397,7 @@ object Chapter16Test {
    */
   def test16_9(): Unit = {
     println((List(10, 20) zip List(3, 4, 5)).map { case (x, y) => x * y })
-    // lazyZip 估计是 2.11.12 版本以上才有？
+    // 查文档，lazyZip 方法应该是 2.13 版本才有
     // println((List(10, 20) lazyZip List(3, 4, 5)).map (_ * _))
   }
 
