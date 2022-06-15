@@ -37,10 +37,15 @@ import com.zerox.Solution2.ListNode
  */
 object Solution2 {
   /**
-   * 去掉 @scala.annotation.tailrec 后的结果
+   * 以下均为去掉 @scala.annotation.tailrec 后的结果
+   *
+   * 方法体为 addTwoNumbers(l1, l2, carry, headPtr, tailPtr) 时：
    * 执行用时： 576 ms , 在所有 Scala 提交中击败了 82.09% 的用户
    * 内存消耗： 56.5 MB , 在所有 Scala 提交中击败了 5.97% 的用户
    * 通过测试用例：1568 / 1568
+   *
+   * 发现方法体里面的头尾指针可以优化掉，就修改后又提交了一下。耗时多了一些，不知道是波动还是确实有影响？
+   * 方法体为 addTwoNumbers(l1, l2, carry) 时：592 ms（48%） 和 56 MB
    *
    * 不去掉注解的话：624 ms（20%） 和 56.5 MB
    *
@@ -53,13 +58,13 @@ object Solution2 {
     val tailPtr: ListNode = new ListNode()
 
     @scala.annotation.tailrec
-    def addTwoNumbers(l1: ListNode, l2: ListNode, carry: Int, headPtr: ListNode, tailPtr: ListNode): ListNode = {
+    def addTwoNumbers(l1: ListNode, l2: ListNode, carry: Int): ListNode = {
       if (l1 == null) {
         if (carry == 0) l2
-        else addTwoNumbers(new ListNode(1), l2, 0, headPtr, tailPtr)
+        else addTwoNumbers(new ListNode(1), l2, 0)
       } else if (l2 == null) {
         if (carry == 0) l1
-        else addTwoNumbers(l1, new ListNode(1), 0, headPtr, tailPtr)
+        else addTwoNumbers(l1, new ListNode(1), 0)
       } else {
         val sum = l1.x + l2.x + carry
         val result = new ListNode(sum % 10)
@@ -70,11 +75,11 @@ object Solution2 {
           tailPtr.next.next = result
           tailPtr.next = result
         }
-        addTwoNumbers(l1.next, l2.next, if (sum >= 10) 1 else 0, headPtr, tailPtr)
+        addTwoNumbers(l1.next, l2.next, if (sum >= 10) 1 else 0)
       }
     }
 
-    val node = addTwoNumbers(l1, l2, 0, headPtr, tailPtr)
+    val node = addTwoNumbers(l1, l2, 0)
     if (tailPtr.next != null) {
       tailPtr.next.next = node
       headPtr.next
