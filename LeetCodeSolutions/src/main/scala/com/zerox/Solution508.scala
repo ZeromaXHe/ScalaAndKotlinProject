@@ -27,6 +27,33 @@ package com.zerox
  */
 object Solution508 {
   /**
+   * 执行用时：588 ms, 在所有 Scala 提交中击败了 100.00% 的用户
+   * 内存消耗：56.1 MB, 在所有 Scala 提交中击败了 100.00% 的用户
+   * 通过测试用例： 58 / 58
+   *
+   * @param root
+   * @return
+   */
+  def findFrequentTreeSum(root: TreeNode): Array[Int] = {
+    val countMap = new scala.collection.mutable.HashMap[Int, Int]
+    traverseAndCount(root, countMap)
+    val max = countMap.values.max
+    countMap.filter(x => x._2 == max).keys.toArray
+  }
+
+  def traverseAndCount(root: TreeNode, map: scala.collection.mutable.HashMap[Int, Int]): Int = {
+    var sum = root.value
+    if (root.left != null) {
+      sum += traverseAndCount(root.left, map)
+    }
+    if (root.right != null) {
+      sum += traverseAndCount(root.right, map)
+    }
+    map(sum) = map.getOrElse(sum, 0) + 1
+    sum
+  }
+
+  /**
    * Definition for a binary tree node.
    * | class TreeNode(_value: Int = 0, _left: TreeNode = null, _right: TreeNode = null) {
    * |   var value: Int = _value
@@ -38,7 +65,7 @@ object Solution508 {
    * 内存消耗：58.6 MB, 在所有 Scala 提交中击败了 100.00% 的用户
    * 通过测试用例： 58 / 58
    */
-  def findFrequentTreeSum(root: TreeNode): Array[Int] = {
+  def findFrequentTreeSum2(root: TreeNode): Array[Int] = {
     val map = new scala.collection.mutable.HashMap[TreeNode, Int]
     traverse(root, map)
     val countMap = map.values.groupBy(identity).mapValues(_.size)
