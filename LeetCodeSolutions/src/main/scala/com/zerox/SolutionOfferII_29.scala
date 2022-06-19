@@ -77,9 +77,10 @@ object SolutionOfferII_29 {
     less.next = node
     head
   }
+
+  class Node(var _value: Int) {
+    var value: Int = _value
+    var next: Node = null
+  }
 }
 
-class Node(var _value: Int) {
-  var value: Int = _value
-  var next: Node = null
-}
