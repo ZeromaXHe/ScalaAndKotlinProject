@@ -273,6 +273,18 @@ object Chapter24Test {
    * 24.14 迭代器
    */
   def test24_14(): Unit = {
+    val iter1 = Iterator("a", "number", "of", "words")
+    while (iter1.hasNext)
+      print(iter1.next() + " ")
+    println()
+
+    val iter2 = Iterator("a", "number", "of", "words")
+    iter2 foreach println
+
+    val iter3 = Iterator("a", "number", "of", "words")
+    for (elem <- iter3) print(elem + " ")
+    println()
+
     val it = Iterator("a", "number", "of", "words")
     val (it1, it2) = it.duplicate
     // 这里和书上不一样，it 没被移到末端，处于首位，依然可用
