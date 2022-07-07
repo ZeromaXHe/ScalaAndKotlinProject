@@ -10,7 +10,7 @@ object Solution46 {
     println(Array(1, 2, 3).toList)
     println(permute(Array(1, 2, 3)))
     println(perm("ABC"))
-    println(List(1,2,3) diff List(3))
+    println(List(1, 2, 3) diff List(3))
   }
 
   def perm[A]: Seq[A] => Seq[Seq[A]] = {
@@ -30,6 +30,28 @@ object Solution46 {
     def perm: List[Int] => List[List[Int]] = {
       case List() => List(Nil);
       case xs => for (x <- xs; rs <- perm(xs diff List(x))) yield x +: rs
+    }
+
+    perm(nums.toList)
+  }
+
+  /**
+   * 执行用时：512 ms, 在所有 Scala 提交中击败了 80.00% 的用户
+   * 内存消耗：54.3 MB, 在所有 Scala 提交中击败了 68.00% 的用户
+   * 通过测试用例：26 / 26
+   *
+   * @param nums
+   * @return
+   */
+  def permute_insert(nums: Array[Int]): List[List[Int]] = {
+    def insert: (Int, List[Int]) => List[List[Int]] = {
+      case (n, List()) => List(List(n))
+      case (n, nI :: ns) => (n :: nI :: ns) :: (for (nsI <- insert(n, ns)) yield nI +: nsI)
+    }
+
+    def perm: List[Int] => List[List[Int]] = {
+      case List() => List(Nil);
+      case x :: xs => (for (permuxs <- perm(xs)) yield insert(x, permuxs)).flatten
     }
 
     perm(nums.toList)

@@ -132,4 +132,59 @@ object Solution51 {
 
     nQueens(n).map(_.map(strList))
   }
+
+  /**
+   * 执行用时：664 ms, 在所有 Scala 提交中击败了 14.29% 的用户
+   * 内存消耗：53.2 MB, 在所有 Scala 提交中击败了 85.71% 的用户
+   * 通过测试用例：9 / 9
+   *
+   * @param n
+   * @return
+   */
+  def solveNQueens_recursive(n: Int): List[List[String]] = {
+    val strList = (0 until n).map(("." * n).updated(_, 'Q')).toList
+
+    def nQueens: Int => List[List[Int]] = {
+      case 0 => List(Nil)
+      case k => for (q <- nQueens(k - 1); c <- 0 until n if noSameDiag(c, q)) yield c :: q
+    }
+
+    def noSameDiag(col: Int, queens: List[Int]) =
+      (1 to queens.length).zip(queens).forall({ case (r, c) => c != col && r != (col - c).abs })
+
+    nQueens(n).map(_.map(strList))
+  }
+
+  /**
+   * 执行用时：1644 ms, 在所有 Scala 提交中击败了 14.29% 的用户
+   * 内存消耗：166 MB, 在所有 Scala 提交中击败了 14.29% 的用户
+   * 通过测试用例：9 / 9
+   *
+   * @param n
+   * @return
+   */
+  def solveNQueens_haskell(n: Int): List[List[String]] = {
+    val strList = (0 until n).map(("." * n).updated(_, 'Q')).toList
+
+    def insert: (Int, List[Int]) => List[List[Int]] = {
+      case (n, List()) => List(List(n))
+      case (n, nI :: ns) => (n :: nI :: ns) :: (for (nsI <- insert(n, ns)) yield nI +: nsI)
+    }
+
+    def perm: List[Int] => List[List[Int]] = {
+      case List() => List(Nil);
+      case x :: xs => (for (permuxs <- perm(xs)) yield insert(x, permuxs)).flatten
+    }
+
+    def noSameDiag: List[Int] => Boolean = {
+      case List() => true
+      case xs@_ :: xsI =>
+        val (i1, p1) :: ip = xs zip Stream.from(0)
+        (for ((i, p) <- ip) yield (i1 - i).abs != (p1 - p).abs).forall(identity) && noSameDiag(xsI)
+    }
+
+    def nQueens: Int => List[List[Int]] = n => for (xs <- perm((0 until n).toList) if noSameDiag(xs)) yield xs
+
+    nQueens(n).map(_.map(strList))
+  }
 }
