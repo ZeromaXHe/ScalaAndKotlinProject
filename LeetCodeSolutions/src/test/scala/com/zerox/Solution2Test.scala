@@ -9,7 +9,7 @@ import org.scalatest.funsuite.AnyFunSuite
  */
 class Solution2Test extends AnyFunSuite {
   test("solution2Test") {
-    import Solution2._
+    import com.zerox.from1to200.Solution2._
     val node3 = new ListNode(8)
     val node2 = new ListNode(0, node3)
     val node1 = new ListNode(7, node2)

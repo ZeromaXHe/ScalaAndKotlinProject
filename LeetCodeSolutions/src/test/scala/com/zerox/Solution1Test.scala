@@ -1,5 +1,6 @@
 package com.zerox
 
+import com.zerox.from1to200.Solution1
 import org.scalatest.funsuite.AnyFunSuite
 
 /**
