@@ -64,11 +64,58 @@ object Solution1206 {
     println(skiplist.erase(0)) // 返回 false，0 不在跳表中
     println(skiplist.erase(1)) // 返回 true
     println(skiplist.search(1)) // 返回 false，1 已被擦除
+
+    // 想验证一下上升一层的逻辑来着，结果找到一个 NPE bug
+    val skiplist2 = new Skiplist()
+    for (i <- 1 to 200) skiplist2.add(i)
+    println(skiplist2)
+
+    case class Node(value: Int, var next: Node)
+
+    println("-------------------------")
+    try {
+      // 2.13 推荐使用 LazyList 代替 Stream
+      val stream = Stream.iterate(Node(-1, Node(1, Node(2, Node(3, Node(4, Node(5, null)))))).next)(_.next).takeWhile(_ != null)
+      println(stream.force)
+      val filtered = stream.filter(_ => math.random < 1.0 / 5)
+      println(filtered.force)
+      val stream2 = filtered
+        .scanLeft(null: Node)((pre: Node, cur: Node) => {
+          if (pre != null) pre.next = cur
+          cur
+        })
+      println(stream2.force) // scanLeft 会把第一个括号内的元素拼进去
+      println("first: " + stream2.head) // null
+      println("second: " + stream2.tail.head) // 可能 java.util.NoSuchElementException: head of empty stream，即只有 null 一个元素
+    } catch {
+      case ex: Exception => ex.printStackTrace()
+    }
+
+    println("-------------------------")
+    try {
+      val iterator = Iterator.iterate(Node(-1, Node(1, Node(2, Node(3, Node(4, Node(5, null)))))).next)(_.next).takeWhile(_ != null)
+      val (iter, iter2) = iterator.duplicate
+      println(iter2.toList)
+      val filter = iter.filter(_ => math.random < 1.0 / 5)
+      val (filt, filt2) = filter.duplicate
+      println(filt2.toList)
+      val head = filt
+        .scanLeft(null: Node)((pre: Node, cur: Node) => {
+          // 2.13 没有问题，但 2.11 概率性会报错（前面 filter 可能过滤空，就不会报错了）
+          println("throw exception")
+          throw new NullPointerException
+          /*if (pre != null) */ pre.next = cur
+          cur
+        }).next()
+      println(head)
+    } catch {
+      case ex: Exception => ex.printStackTrace()
+    }
   }
 
   /**
-   * 执行用时：1196 ms, 在所有 Scala 提交中击败了 100.00% 的用户
-   * 内存消耗：69.5 MB, 在所有 Scala 提交中击败了 100.00% 的用户
+   * 执行用时：1192 ms, 在所有 Scala 提交中击败了 100.00% 的用户
+   * 内存消耗：66.3 MB, 在所有 Scala 提交中击败了 100.00% 的用户
    * 通过测试用例：20 / 20
    */
   class Skiplist() {
@@ -109,13 +156,30 @@ object Solution1206 {
         }).force
       count += 1
       if (count > capacity) {
-        head = new Node(-1, head,
-          Iterator.iterate(head.right)(_.right).takeWhile(_ != null)
-            .filter(_ => math.random < 1.0 / avgJump)
-            .scanLeft(null: Node)((pre: Node, cur: Node) => {
-              pre.right = cur
-              cur
-            }).next())
+        head = new Node(-1, head, null)
+        Stream.iterate(head.down.right)(_.right).takeWhile(_ != null)
+          .filter(_ => math.random < 1.0 / avgJump)
+          .scanLeft(head)((pre: Node, cur: Node) => {
+            pre.right = new Node(cur.value, cur, null)
+            pre.right
+          }).force
+
+        /**
+         * 执行用时：1196 ms, 在所有 Scala 提交中击败了 100.00% 的用户
+         * 内存消耗：69.5 MB, 在所有 Scala 提交中击败了 100.00% 的用户
+         * 通过测试用例：20 / 20
+         */
+        // 这里如果使用下面代码，则 head.right 直接就等于 null 了，原因就是 scanLeft 会把 null 拼到开头。
+        // head = new Node(-1, head,
+        //   Iterator.iterate(head.right)(_.right).takeWhile(_ != null)
+        //     .filter(_ => math.random < 1.0 / avgJump)
+        //     .scanLeft(null: Node)((pre: Node, cur: Node) => {
+        //       // 之所以发现，是因为这里其实会空指针，在 2.11 版本 Scala 会报错，但是 2.13 版本不会。
+        //       // 2.11 如果改成 Stream.iterate 开头，.head 结尾则不会报错
+        //       // 2.13 就不需要改也不会报错。估计是 Iterator.scanLeft 的实现也改成是惰性的了？第二个括号其实不会执行
+        //       pre.right = cur
+        //       cur
+        //     }).next()
         capacity *= avgJump
       }
     }
