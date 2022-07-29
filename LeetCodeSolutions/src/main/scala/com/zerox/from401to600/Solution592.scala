@@ -109,8 +109,8 @@ object Solution592 {
     val numer: Int = n / g
     val denom: Int = d / g
 
-    def +(that: Rational): Rational =
-      new Rational(
+    def +(that: Rational2): Rational2 =
+      new Rational2(
         numer * that.denom + that.numer * denom,
         denom * that.denom
       )
