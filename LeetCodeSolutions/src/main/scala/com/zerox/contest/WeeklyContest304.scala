@@ -6,7 +6,7 @@ package com.zerox.contest
  * @note
  * 第 304 场周赛
  */
-object WeeklyConstest304 {
+object WeeklyContest304 {
   /**
    * 6132. 使数组中所有元素都等于零 | 难度：简单
    * 95 / 95 个通过测试用例
