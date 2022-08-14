@@ -50,8 +50,6 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/scala</source>
-                                <source>src/main/java</source>
                                 <source>src/main/kotlin</source>
                             </sourceDirs>
                         </configuration>
@@ -64,8 +62,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/test/scala</source>
-                                <source>src/test/java</source>
+                                <source>src/test/kotlin</source>
                             </sourceDirs>
                         </configuration>
                     </execution>
