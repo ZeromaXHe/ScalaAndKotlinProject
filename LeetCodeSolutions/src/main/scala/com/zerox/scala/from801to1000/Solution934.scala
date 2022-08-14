@@ -32,20 +32,111 @@ package com.zerox.scala.from801to1000
  * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
 object Solution934 {
-  def shortestBridge(grid: Array[Array[Int]]): Int = {
-    var findingFirstLand = true
-    for (i <- grid.indices; j <- grid(0).indices if findingFirstLand) {
-      if (grid(i)(j) == 1) {
-        findingFirstLand = false
-        dfs[Int](grid, i, j, elem => elem == 1, (g, x, y) => g(x)(y) = -1)
-      }
-    }
-    val queue1 = new scala.collection.mutable.Queue[(Int, Int)]
-    val queue2 = new scala.collection.mutable.Queue[(Int, Int)]
-    1
+  def main(args: Array[String]): Unit = {
+    println(shortestBridge(Array(
+      Array(0, 1, 0, 0, 0),
+      Array(0, 1, 0, 1, 1),
+      Array(0, 0, 0, 0, 1),
+      Array(0, 0, 0, 0, 0),
+      Array(0, 0, 0, 0, 0))))
   }
 
-  private def dfs[T](grid: Array[Array[T]], x: Int, y: Int, valid: T => Boolean, exec: (Array[Array[T]], Int, Int) => Unit): Unit = {
+  /**
+   * 执行用时：644 ms, 在所有 Scala 提交中击败了 100.00% 的用户
+   * 内存消耗：64 MB, 在所有 Scala 提交中击败了 100.00% 的用户
+   * 通过测试用例：97 / 97
+   *
+   * @param grid
+   * @return
+   */
+  def shortestBridge(grid: Array[Array[Int]]): Int = {
+    var findingFirstLand = true
+    var findingSecondLand = true
+    val queue1 = new scala.collection.mutable.Queue[(Int, Int)]
+    val queue2 = new scala.collection.mutable.Queue[(Int, Int)]
+    for (i <- grid.indices; j <- grid(0).indices if findingFirstLand || findingSecondLand) {
+      if (findingFirstLand) {
+        if (grid(i)(j) == 1) {
+          findingFirstLand = false
+          dfs[Int](grid, i, j, elem => elem == 1,
+            (g, x, y) => {
+              g(x)(y) = -1
+              enqueueShore(queue1, g, x, y)
+            })
+        }
+      } else {
+        if (grid(i)(j) == 1) {
+          findingSecondLand = false
+          dfs[Int](grid, i, j, elem => elem == 1,
+            (g, x, y) => {
+              g(x)(y) = 2
+              enqueueShore(queue2, g, x, y)
+            })
+        }
+      }
+    }
+    while (queue1.nonEmpty && queue2.nonEmpty) {
+      var size1 = queue1.size
+      while (size1 > 0) {
+        val (x, y) = queue1.dequeue()
+        val res = enqueueAroundSeaOrReturnFoundLand(queue1, grid, x, y, grid(x)(y) - 1)
+        if (res != 0) return res - grid(x)(y) - 3
+        size1 -= 1
+      }
+      var size2 = queue2.size
+      while (size2 > 0) {
+        val (x, y) = queue2.dequeue()
+        val res = enqueueAroundSeaOrReturnFoundLand(queue2, grid, x, y, grid(x)(y) + 1)
+        if (res != 0) return grid(x)(y) - res - 3
+        size2 -= 1
+      }
+    }
+    0
+  }
+
+  private def enqueueShore(queue: scala.collection.mutable.Queue[(Int, Int)],
+                           grid: Array[Array[Int]], x: Int, y: Int): Unit = {
+    if (x + 1 < grid.length && grid(x + 1)(y) == 0) queue.enqueue((x, y))
+    else if (x - 1 >= 0 && grid(x - 1)(y) == 0) queue.enqueue((x, y))
+    else if (y + 1 < grid(0).length && grid(x)(y + 1) == 0) queue.enqueue((x, y))
+    else if (y - 1 >= 0 && grid(x)(y - 1) == 0) queue.enqueue((x, y))
+  }
+
+  private def enqueueAroundSeaOrReturnFoundLand(queue: scala.collection.mutable.Queue[(Int, Int)],
+                                                grid: Array[Array[Int]], x: Int, y: Int, to: Int): Int = {
+    if (x + 1 < grid.length) {
+      if (grid(x + 1)(y) == 0) {
+        grid(x + 1)(y) = to
+        queue.enqueue((x + 1, y))
+      }
+      else if ((grid(x + 1)(y) ^ to) >>> 31 == 1) return grid(x + 1)(y)
+    }
+    if (x - 1 >= 0) {
+      if (grid(x - 1)(y) == 0) {
+        grid(x - 1)(y) = to
+        queue.enqueue((x - 1, y))
+      }
+      else if ((grid(x - 1)(y) ^ to) >>> 31 == 1) return grid(x - 1)(y)
+    }
+    if (y + 1 < grid(0).length) {
+      if (grid(x)(y + 1) == 0) {
+        grid(x)(y + 1) = to
+        queue.enqueue((x, y + 1))
+      }
+      else if ((grid(x)(y + 1) ^ to) >>> 31 == 1) return grid(x)(y + 1)
+    }
+    if (y - 1 >= 0) {
+      if (grid(x)(y - 1) == 0) {
+        grid(x)(y - 1) = to
+        queue.enqueue((x, y - 1))
+      }
+      else if ((grid(x)(y - 1) ^ to) >>> 31 == 1) return grid(x)(y - 1)
+    }
+    0
+  }
+
+  private def dfs[T](grid: Array[Array[T]], x: Int, y: Int, valid: T => Boolean,
+                     exec: (Array[Array[T]], Int, Int) => Unit): Unit = {
     exec(grid, x, y)
     if (x + 1 < grid.length && valid(grid(x + 1)(y))) dfs(grid, x + 1, y, valid, exec)
     if (x - 1 >= 0 && valid(grid(x - 1)(y))) dfs(grid, x - 1, y, valid, exec)
