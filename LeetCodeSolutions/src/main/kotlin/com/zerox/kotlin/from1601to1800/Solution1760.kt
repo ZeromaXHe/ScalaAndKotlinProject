@@ -1,4 +1,4 @@
-package com.zerox.kotlin.from1401to1600
+package com.zerox.kotlin.from1601to1800
 
 /**
  * 1760. 袋子里最少数目的球 | 难度：中等 | 标签：数组、二分查找
