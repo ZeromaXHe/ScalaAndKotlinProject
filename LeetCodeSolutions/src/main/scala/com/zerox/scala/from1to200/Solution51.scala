@@ -32,7 +32,7 @@ package com.zerox.scala.from1to200
 object Solution51 {
   def main(args: Array[String]): Unit = {
     val l = System.currentTimeMillis()
-    solveNQueens_StringPerm(9)
+    // solveNQueens_StringPerm(9)
     println(System.currentTimeMillis() - l)
     println("----------------------------------------")
     val l1 = System.currentTimeMillis()
@@ -98,12 +98,13 @@ object Solution51 {
     }).map(_.map(strList).toList).toList
   }
 
-  def solveNQueens_StringPerm(n: Int): List[List[String]] = {
-    val strIndexTupleList = (0 until n).map(i => (("." * n).updated(i, 'Q'), i))
-    strIndexTupleList.view.permutations.filter(_.view.zipWithIndex.combinations(2) forall {
-      case Seq((a, b), (c, d)) => a._2 + b != c._2 + d && a._2 + d != b + c._2
-    }).map(_.map(_._1).toList).toList
-  }
+  // 2.11 代码，2.13 中会报错(.combinations 不行)
+  // def solveNQueens_StringPerm(n: Int): List[List[String]] = {
+  //   val strIndexTupleList = (0 until n).map(i => (("." * n).updated(i, 'Q'), i))
+  //   strIndexTupleList.view.permutations.filter(_.view.zipWithIndex.combinations(2) forall {
+  //     case Seq((a, b), (c, d)) => a._2 + b != c._2 + d && a._2 + d != b + c._2
+  //   }).map(_.map(_._1).toList).toList
+  // }
 
   /**
    * 执行用时：540 ms, 在所有 Scala 提交中击败了 62.50% 的用户

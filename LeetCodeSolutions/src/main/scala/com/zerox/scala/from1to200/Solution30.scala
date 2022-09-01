@@ -51,7 +51,9 @@ object Solution30 {
    * @return
    */
   def findSubstring(s: String, words: Array[String]): List[Int] = {
-    val map = words.groupBy(identity).mapValues(_.length)
+    // 2.11
+    // val map = words.groupBy(identity).mapValues(_.length)
+    val map = words.groupBy(identity).view.mapValues(_.length)
     val wordLen = words(0).length
     val total = words.length * wordLen
     val temp = new collection.mutable.HashMap[String, Int]
@@ -66,13 +68,13 @@ object Solution30 {
    * @param i
    * @param s
    * @param temp
-   * @param map 力扣里面的类型得写成 scala.collection.MapView[String, Int]
+   * @param map 2.11 里面的类型得写成 Map[String, Int]
    * @param words
    * @param wordLen
    * @return
    */
   private def slidingMatch(i: Int, s: String, temp: collection.mutable.HashMap[String, Int],
-                           map: Map[String, Int], words: Array[String], wordLen: Int): Boolean = {
+                           map: scala.collection.MapView[String, Int], words: Array[String], wordLen: Int): Boolean = {
     temp.clear()
     for (j <- words.indices) {
       val testStr = s.substring(i + j * wordLen, i + (j + 1) * wordLen)
