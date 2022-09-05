@@ -10,7 +10,7 @@ class HashTrie {
 
   import scala.collection.mutable
 
-  private case class TrieNode(var end: Boolean = false,
+  case class TrieNode(var end: Boolean = false,
                               children: mutable.HashMap[Char, TrieNode] = new mutable.HashMap[Char, TrieNode])
 
   val root: TrieNode = TrieNode()

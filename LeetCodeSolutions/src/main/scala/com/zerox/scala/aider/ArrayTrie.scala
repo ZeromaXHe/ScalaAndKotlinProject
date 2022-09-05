@@ -7,9 +7,9 @@ package com.zerox.scala.aider
  * 数组实现的字典树，仅支持字符串全部为小写字母或全部为大写字母的情况
  */
 class ArrayTrie(lowerCase: Boolean = true) {
-  private case class TrieNode(char: Char,
-                              var end: Boolean = false,
-                              children: Array[TrieNode] = new Array[TrieNode](26))
+  case class TrieNode(char: Char,
+                      var end: Boolean = false,
+                      children: Array[TrieNode] = new Array[TrieNode](26))
 
   val root: TrieNode = TrieNode('#')
   val baseChar: Char = if (lowerCase) 'a' else 'A'

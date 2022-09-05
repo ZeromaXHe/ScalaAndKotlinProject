@@ -8,7 +8,8 @@ package com.zerox.scala.aider
  */
 class BinarySearcher[T](value: Int => T) {
 
-  def this(arr: Array[T]) = this(arr.apply)
+  // 使用 this(arr.apply) 无法通过编译；this(arr.apply(_))) 可以编译但是会有警告让你把 _ 省略
+  def this(arr: Array[T]) = this(i => arr(i))
 
   /**
    * 表示找到的索引和结果

@@ -7,11 +7,11 @@ package com.zerox.scala.aider
  * 动态规划工具类
  */
 object DynamicProgrammingUtils {
-  def dpOneDimension[T](n: Int, inits: List[(Int, T)], coords: List[Int => Int],
-                        trans: (Array[T], List[Int => Int]) => T, from: Int): Array[T] = {
-    val dp = new Array[T](n)
+  def dpOneDimension(n: Int, inits: List[(Int, Int)], coords: List[Int => Int],
+                     trans: (Array[Int], List[Int => Int]) => Int, from: Int): Array[Int] = {
+    val dp = new Array[Int](n)
     for ((i, elem) <- inits) dp(i) = elem
-    for(i <- from until n) dp(i) = trans(dp, coords)
+    for (i <- from until n) dp(i) = trans(dp, coords)
     dp
   }
 }
