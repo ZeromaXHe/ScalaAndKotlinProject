@@ -72,6 +72,18 @@ object MathUtils {
   @scala.annotation.tailrec
   def gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
 
+  @scala.annotation.tailrec
+  def gcd(a: Long, b: Long): Long = if (b == 0) a else gcd(b, a % b)
+
+  /**
+   * 求两个数的最小公倍数
+   *
+   * @param a
+   * @param b
+   * @return
+   */
+  def lcm(a: Long, b: Long): Long = a * b / gcd(a, b)
+
   /**
    * 求一组数的最大公约数
    *
