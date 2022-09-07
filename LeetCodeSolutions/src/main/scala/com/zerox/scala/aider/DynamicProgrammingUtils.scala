@@ -43,14 +43,39 @@ object DynamicProgrammingUtils {
 
   /**
    * 记忆化
-   * 其实可以不套这个模板，只是通过本模板写一下 Scala 中的 HashMap 这种默认支持的写法
    *
-   * @param cache
-   * @param i
-   * @param generate
+   * @param cache            用于记忆缓存的哈希表
+   * @param key              要查询的键
+   * @param generate         没有缓存时的生成值逻辑
+   * @param noCacheCondition 不需要缓存的条件
+   * @param noCacheGenerate  不需要缓存时的生成值逻辑
+   * @tparam K 键类型
+   * @tparam V 值类型
    * @return
    */
-  def cached(cache: scala.collection.mutable.HashMap[Int, Int], i: Int, generate: Int => Int): Int = {
-    cache.getOrElseUpdate(i, generate(i))
+  def cachedHash[K, V](cache: scala.collection.mutable.HashMap[K, V], key: K, generate: K => V,
+                       noCacheCondition: K => Boolean = (_: K) => false, noCacheGenerate: K => V = null): V = {
+    if (noCacheCondition(key)) noCacheGenerate(key)
+    else cache.getOrElseUpdate(key, generate(key))
+  }
+
+  def cachedArray[T](cache: Array[T], i: Int, generate: Int => T, arrDefault: T,
+                     noCacheCondition: Int => Boolean = _ => false,
+                     noCacheGenerate: Int => T = null): T = {
+    if (noCacheCondition(i)) noCacheGenerate(i)
+    else {
+      if (cache(i) == arrDefault) cache(i) = generate(i)
+      cache(i)
+    }
+  }
+
+  def cachedArray2D[T](cache: Array[Array[T]], i: Int, j: Int, generate: (Int, Int) => T, arrDefault: T,
+                       noCacheCondition: (Int, Int) => Boolean = (_, _) => false,
+                       noCacheGenerate: (Int, Int) => T = null): T = {
+    if (noCacheCondition(i, j)) noCacheGenerate(i, j)
+    else {
+      if (cache(i)(j) == arrDefault) cache(i)(j) = generate(i, j)
+      cache(i)(j)
+    }
   }
 }
