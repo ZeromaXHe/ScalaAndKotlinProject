@@ -7,14 +7,43 @@ package com.zerox.scala.aider
  * 图论相关的工具类
  */
 object GraphUtils {
+  /**
+   * 深度优先搜索
+   *
+   * @param matrix        矩阵表示的图
+   * @param i             行数
+   * @param j             列数
+   * @param valid         判断是否合法的下一步的方法
+   * @param exec          算出本步结果的方法
+   * @param exitCondition 判断是否提前退出的方法
+   * @param exitRes       计算提前退出的返回值的方法
+   * @param reduceRes     如何把结果合并的方法
+   * @param postExec      计算出结果的后处理
+   * @tparam T 矩阵的类型
+   * @return
+   */
   def dfs[T](matrix: Array[Array[T]], i: Int, j: Int,
-             valid: (Array[Array[T]], Int, Int) => Boolean,
-             exec: (Array[Array[T]], Int, Int) => Int): Int = {
-    var res = exec(matrix, i, j)
-    if (i - 1 >= 0 && valid(matrix, i - 1, j)) res += dfs(matrix, i - 1, j, valid, exec)
-    if (i + 1 < matrix.length && valid(matrix, i + 1, j)) res += dfs(matrix, i + 1, j, valid, exec)
-    if (j - 1 >= 0 && valid(matrix, i, j - 1)) res += dfs(matrix, i, j - 1, valid, exec)
-    if (j + 1 < matrix(0).length && valid(matrix, i, j + 1)) res += dfs(matrix, i, j + 1, valid, exec)
+             valid: (Int, Int, Int, Int) => Boolean,
+             exec: (Int, Int) => Int,
+             reduceRes: (Int, Int) => Int,
+             exitCondition: (Int, Int) => Boolean = (_, _) => false,
+             exitRes: (Int, Int) => Int = (_, _) => 0,
+             postExec: (Int, Int, Int) => Int = (_, _, res) => res): Int = {
+    if (exitCondition(i, j)) return exitRes(i, j)
+    var res = exec(i, j)
+    if (i - 1 >= 0 && valid(i - 1, j, i, j)) {
+      res = reduceRes(res, dfs(matrix, i - 1, j, valid, exec, reduceRes))
+    }
+    if (i + 1 < matrix.length && valid(i + 1, j, i, j)) {
+      res = reduceRes(res, dfs(matrix, i + 1, j, valid, exec, reduceRes))
+    }
+    if (j - 1 >= 0 && valid(i, j - 1, i, j)) {
+      res = reduceRes(res, dfs(matrix, i, j - 1, valid, exec, reduceRes))
+    }
+    if (j + 1 < matrix(0).length && valid(i, j + 1, i, j)) {
+      res = reduceRes(res, dfs(matrix, i, j + 1, valid, exec, reduceRes))
+    }
+    res = postExec(i, j, res)
     res
   }
 
@@ -44,7 +73,7 @@ object GraphUtils {
       val size = queue.size
       for (_ <- 0 until size) {
         val deq = queue.dequeue()
-        if (map.contains(deq)){
+        if (map.contains(deq)) {
           for (v <- map(deq)) {
             in(v) -= 1
             if (condition(in(v))) queue.enqueue(v)
