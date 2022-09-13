@@ -14,7 +14,7 @@ class ArrayTrie(lowerCase: Boolean = true) {
   val root: TrieNode = TrieNode('#')
   val baseChar: Char = if (lowerCase) 'a' else 'A'
 
-  def addAll(dictionary: List[String]): Unit = {
+  def addAll(dictionary: Seq[String]): Unit = {
     dictionary.foreach(add)
   }
 
@@ -27,12 +27,21 @@ class ArrayTrie(lowerCase: Boolean = true) {
     pre.end = true
   }
 
-  def contains(s: String, from: Int, to: Int): Boolean = {
+  def contains(s: String): Boolean = contains(s, 0, s.length)
+
+  def contains(s: String, from: Int = 0, to: Int): Boolean = existPres(s, from, to).contains(to)
+
+  def existPres(s: String): Set[Int] = existPres(s, 0, s.length)
+
+  def existPres(s: String, from: Int = 0, to: Int): Set[Int] = {
     var node = root
+    val set = new scala.collection.mutable.HashSet[Int]
+    if (node.end) set.add(0)
     for (i <- from until to) {
-      if (node.children(s(i) - baseChar) == null) return false
+      if (node.children(s(i) - baseChar) == null) return set.toSet
       node = node.children(s(i) - baseChar)
+      if (node.end) set.add(i + 1)
     }
-    node.end
+    set.toSet
   }
 }

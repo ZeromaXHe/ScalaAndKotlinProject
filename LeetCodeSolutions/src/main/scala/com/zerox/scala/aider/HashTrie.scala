@@ -11,11 +11,11 @@ class HashTrie {
   import scala.collection.mutable
 
   case class TrieNode(var end: Boolean = false,
-                              children: mutable.HashMap[Char, TrieNode] = new mutable.HashMap[Char, TrieNode])
+                      children: mutable.HashMap[Char, TrieNode] = new mutable.HashMap[Char, TrieNode])
 
   val root: TrieNode = TrieNode()
 
-  def addAll(dictionary: List[String]): Unit = {
+  def addAll(dictionary: Seq[String]): Unit = {
     dictionary.foreach(add)
   }
 
@@ -28,12 +28,21 @@ class HashTrie {
     pre.end = true
   }
 
-  def contains(s: String, from: Int, to: Int): Boolean = {
+  def contains(s: String): Boolean = contains(s, 0, s.length)
+
+  def contains(s: String, from: Int = 0, to: Int): Boolean = existPres(s, from, to).contains(to)
+
+  def existPres(s: String): Set[Int] = existPres(s, 0, s.length)
+
+  def existPres(s: String, from: Int, to: Int): Set[Int] = {
     var node = root
+    val set = new scala.collection.mutable.HashSet[Int]
+    if (node.end) set.add(0)
     for (i <- from until to) {
-      if (!node.children.contains(s(i))) return false
+      if (!node.children.contains(s(i))) return set.toSet
       node = node.children(s(i))
+      if (node.end) set.add(i + 1)
     }
-    node.end
+    set.toSet
   }
 }
